@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ Thống Kho Đa Sàn Pro 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>QUẢN LÝ KHO & PHÂN RÃ COMBO ĐA SÀN</h1>
+
+        <div class="tab-header">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-tiktok')">TIKTOK</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-shopee')">SHOPEE</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-ngoai')">NGOẠI SÀN</button>
+            <button class="tab-btn btn-summary" onclick="openTab(event, 'tab-tonghop')">📊 TỔNG XUẤT KHO</button>
+        </div>
+
+        <script>
+            const floors = [
+                { id: 'tiktok', name: 'TikTok Shop', color: 'tiktok-border' },
+                { id: 'shopee', name: 'Shopee', color: 'shopee-border' },
+                { id: 'ngoai', name: 'Ngoại Sàn (FB/Zalo)', color: 'ngoai-border' }
+            ];
+            
+            floors.forEach((f, index) => {
+                document.write(`
+                <div id="tab-${f.id}" class="tab-content ${index === 0 ? 'active' : ''}">
+                    <div class="floor-block ${f.color}">
+                        <h2 class="title-${f.id}">${f.name.toUpperCase()}</h2>
+                        
+                        <div class="header-flex">
+                            <label class="lbl">📖 1. Từ Điển Combo (A, B, C, D)</label>
+                            <button onclick="clearTable('dict-${f.id}')" class="btn-mini-clear">Xóa Từ Điển</button>
+                        </div>
+                        <div class="excel-wrapper">
+                            <table class="excel-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th class="res-col">A (TÊN SP)</th>
+                                        <th class="res-col">B (SKU)</th>
+                                        <th class="res-col">C (SELLER)</th>
+                                        <th class="res-col">D (HÀNG HÓA)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dict-${f.id}"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="header-flex">
+                            <label class="lbl">📦 2. Đơn Hàng Cần Xử Lý (A, B, C, D, E)</label>
+                            <button onclick="clearTable('order-${f.id}')" class="btn-mini-clear">Xóa Đơn Hàng</button>
+                        </div>
+                        <div class="excel-wrapper">
+                            <table class="excel-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th class="res-col">A (TÊN SP)</th>
+                                        <th class="res-col">B (SKU)</th>
+                                        <th class="res-col">C (SELLER)</th>
+                                        <th class="res-col">D (SL)</th>
+                                        <th class="res-col">E (KẾT QUẢ)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="order-${f.id}"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="btn-group">
+                            <button onclick="processFloor('${f.id}')" class="btn-floor btn-${f.id}">PHÂN RÃ ĐƠN ${f.name.toUpperCase()}</button>
+                            <button onclick="clearSelection()" class="btn-clear-select">Xóa Vùng Chọn</button>
+                        </div>
+
+                        <div id="error-${f.id}" class="error-box hidden">
+                            <p class="text-red">❌ LỖI KHÔNG KHỚP TỪ ĐIỂN:</p>
+                            <div class="excel-wrapper"><table class="excel-table">
+                                <thead><tr><th style="width:40px">Dòng</th><th>Cột A</th><th>Cột B</th><th>Cột C</th></tr></thead>
+                                <tbody id="error-body-${f.id}"></tbody>
+                            </table></div>
+                        </div>
+
+                        <div id="result-${f.id}" class="res-box hidden">
+                            <p class="text-green">✅ TỔNG HÀNG RIÊNG SÀN:</p>
+                            <div class="excel-wrapper"><table class="excel-table">
+                                <thead><tr><th>Mặt Hàng</th><th>Số Lượng</th></tr></thead>
+                                <tbody id="res-body-${f.id}"></tbody>
+                            </table></div>
+                        </div>
+                    </div>
+                </div>
+                `);
+            });
+        </script>
+
+        <div id="tab-tonghop" class="tab-content">
+            <div class="final-header">
+                <h2>📊 PHIẾU TỔNG XUẤT KHO TOÀN SÀN</h2>
+                <div>
+                    <button onclick="exportExcel()" class="btn-export">Xuất Excel Tổng</button>
+                    <button onclick="clearAllData()" class="btn-clear-all">XÓA TẤT CẢ</button>
+                </div>
+            </div>
+            <div class="excel-wrapper">
+                <table class="excel-table">
+                    <thead><tr><th style="width:50px">STT</th><th>Mặt Hàng Thực Tế</th><th style="width:100px">Số Lượng</th></tr></thead>
+                    <tbody id="final-result-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <button onclick="combineAll()" class="btn-combine">🔥 CHỐT TỔNG HỢP TẤT CẢ SÀN (CTRL + Z ĐỂ QUAY LẠI)</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
